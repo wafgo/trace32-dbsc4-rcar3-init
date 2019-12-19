@@ -1,0 +1,53 @@
+OPEN #1 "./mem_access_gen.cmm" /Read
+LOCAL &cmd_cnt
+
+&cmd_cnt=0.
+READ #1 %LINE &full_line
+
+PRINT %COLOR.NAVY "Start Reading mem_access_gen.cmm to configure DDR4 Controller (DBSC)"
+PRINT %COLOR.NAVY "This may take a few seconds, be patient"
+PRINT %COLOR.RED "The Progress will NOT be printed because Trace32 PRINT commands are horribly slow"
+WHILE !FILE.EOFLASTREAD()
+(
+	&rnw=STRING.SPLIT("&full_line"," ",0)
+	&addr=STRING.SPLIT("&full_line"," ",1)
+	&val=STRING.SPLIT("&full_line"," ",2)
+    IF (&rnw==1.)
+    (
+        &tval=Data.Long(A:(&addr))
+    )
+    ELSE
+    (
+        Data.Set A:(&addr) %LE %Long &val
+    )
+    READ #1 %LINE &full_line
+    &cmd_cnt=&cmd_cnt+1.
+)
+
+CLOSE #1
+PRINT "Executed &cmd_cnt register accesses for DBSC4 Initialization"
+
+// some rudimentary ddr access checks with memory comparison
+&tval=0.
+REPEAT 200.
+(
+    &addr=0x50000000+(&tval)
+    Data.Set VM:(&addr) %LE %Long (0xd00dfeed+&tval+7.)
+    Data.Set A:(&addr) %LE %Long (0xd00dfeed+&tval+7.)
+    &tval=&tval+4.
+)
+
+Data.Compare 0x50000000++100. VM:0x50000000
+
+IF FOUND()
+(
+    PRINT %COLOR.RED "Initialization of DDR4 Controller failed"
+    Data.dump TRACK.ADDRESS()
+)
+
+ELSE
+(
+    PRINT %COLOR.GREEN "Successfully initialized DDR4 Controller, you can now load directly to DRAM"
+)
+
+ENDDO
