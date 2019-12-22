@@ -1,3 +1,4 @@
+ENTRY %LINE &p
 WinCLEAR
 
 RESet
@@ -11,11 +12,17 @@ Data.Set AD:0xE67F0018 %LE %Long 0x1
 
 Trace.DISable
 
-Data.LOAD.Elf "../../build/rcar/debug/bl2/bl2.elf"
+IF STRING.SCAN("&p", "BL2=",0)==-1
+(
+    GOSUB print_args
+)
+
+&bl2=STRing.SCANAndExtract("&p", "BL2=", "../../build/rcar/debug/bl2/bl2.elf")
+Data.LOAD.Elf &bl2
 WinCLEAR
 Mode.Hll
 
-do ../window_config
+do window_config
 
 Go.direct InitDram
 WAIT !STATE.RUN()
@@ -46,3 +53,13 @@ Break.Set     mmio_write_32\1 /Program /CMD "APPEND ./mem_access_gen.cmm ""0 0x"
 Go
 
 ENDDO
+
+print_args:
+    PRINT "Usage:"
+    PRINT
+    PRINT "do dram_init_generate.cmm BL2=<bl2> "
+    PRINT "Where:"
+    PRINT " <bl2> is the location of the ATF bl2 elf file"
+    PRINT "Script will complete using default values."
+RETURN
+

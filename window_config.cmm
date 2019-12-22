@@ -1,0 +1,38 @@
+// t32 Wed Oct  9 20:30:10 2019
+
+B::
+
+TOOLBAR   ON
+STATUSBAR ON
+FramePOS 279.0,0.0,,,Maximized
+WinPAGE.RESet
+
+WinPAGE.Create P000
+WinCLEAR
+
+WinPOS 157.0 45.2 114. 8. 5. 0. W001
+wl.Frame.view
+
+WinPOS 157.0 0.0 114. 8. 0. 0. W002
+wl.Var.Watch
+
+VAR.ADDWATCH flags
+VAR.ADDWATCH ast
+
+WinPOS 157.0 13.467 114. 18. 0. 0. W003
+wl.Register
+
+WinPOS 0.0 51.467 154. 3. 0. 0. W005
+wl.AREA
+
+WinPOS 0.0 0.0 154. 46. 24. 1. W000
+WinTABS 10. 10. 25.
+wl.List.auto
+
+WinPOS 157.0 34.4 114. 6. 37. 1. W004
+WinTABS 13. 0. 0. 0. 0. 0. 0. 0. 0. 49.
+wl.Break.List
+
+WinPAGE.select P000
+
+ENDDO

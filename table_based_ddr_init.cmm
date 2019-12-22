@@ -1,10 +1,18 @@
-OPEN #1 "./mem_access_gen.cmm" /Read
+ENTRY %LINE &p
+
+IF STRING.SCAN("&p", "CMD_CMM=",0)==-1
+(
+    GOSUB print_args
+)
+
+&cmd_cmm=STRing.SCANAndExtract("&p", "CMD_CMM=", "./mem_access_gen.cmm")
+OPEN #1 &cmd_cmm /Read
 LOCAL &cmd_cnt
 
 &cmd_cnt=0.
 READ #1 %LINE &full_line
 
-PRINT %COLOR.NAVY "Start Reading mem_access_gen.cmm to configure DDR4 Controller (DBSC)"
+PRINT %COLOR.NAVY "Start Reading &cmd_cmm to configure DDR4 Controller (DBSC)"
 PRINT %COLOR.NAVY "This may take a few seconds, be patient"
 PRINT %COLOR.RED "The Progress will NOT be printed because Trace32 PRINT commands are horribly slow"
 WHILE !FILE.EOFLASTREAD()
@@ -51,3 +59,13 @@ ELSE
 )
 
 ENDDO
+
+print_args:
+    PRINT "Usage:"
+    PRINT
+    PRINT "do table_based_ddr_init.cmm CMD_CMM==<cmd_cmm> "
+    PRINT "Where:"
+    PRINT " <cmd_cmm> is the cmm script with the dbsc register settings in the form ""rnw addr data"""
+    PRINT "Script will complete using default values."
+RETURN
+
